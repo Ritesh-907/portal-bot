@@ -6,7 +6,12 @@ function formatAttendance(snapshot) {
 
   if (Array.isArray(snapshot.courses) && snapshot.courses.length) {
     text += snapshot.courses
-      .map((c) => `${String(c.percentage).padStart(4)} — ${c.courseName} [${c.courseCode}]`)
+      .map((c) => {
+        const name = (c.courseName || '').replace(/&amp;/g, '&');
+        const pct = String(c.percentage || '').padStart(4);
+        const count = (c.attended !== undefined && c.delivered !== undefined) ? ` (${c.attended}/${c.delivered})` : '';
+        return `${pct}${count} — ${name} [${c.courseCode}]`;
+      })
       .join('\n');
   } else {
     text += '_(Per-course breakdown unavailable right now — send /start to refresh.)_';

@@ -64,6 +64,17 @@ function parseDateComponents(text) {
 // assume the same date *last* year instead (e.g. asking in Jan 2027 about
 // "26 aug" attendance clearly means Aug 2026, not a still-to-come Aug 2027).
 function parseDayAttendanceQuery(text) {
+  if (/\btoday('?s)?\b/i.test(text)) {
+    const now = new Date();
+    return { day: now.getDate(), monthIndex0: now.getMonth(), year: now.getFullYear() };
+  }
+
+  if (/\byesterday('?s)?\b/i.test(text)) {
+    const now = new Date();
+    now.setDate(now.getDate() - 1);
+    return { day: now.getDate(), monthIndex0: now.getMonth(), year: now.getFullYear() };
+  }
+
   const parsed = parseDateComponents(text);
   if (!parsed) return null;
 

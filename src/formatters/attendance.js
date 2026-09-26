@@ -25,12 +25,27 @@ function findDayRow(days, date) {
 }
 
 const STATUS_EMOJI = {
-  present: '✅',
-  absent: '❌',
+  green: '🟢',
+  red: '🔴',
+  yellow: '🟡',
+  present: '🟢',
+  absent: '🔴',
+  p: '🟢',
+  a: '🔴',
   holiday: '🎉',
   cancelled: '⚠️',
   leave: '📝',
 };
+
+function getStatusEmoji(statusColor, status) {
+  const colorKey = (statusColor || '').toLowerCase();
+  if (STATUS_EMOJI[colorKey]) return STATUS_EMOJI[colorKey];
+
+  const statusKey = (status || '').toLowerCase();
+  if (STATUS_EMOJI[statusKey]) return STATUS_EMOJI[statusKey];
+
+  return '🟢';
+}
 
 // Ported/new: day-wise attendance for one specific date, e.g. what "26 aug
 // attendance" replies with. `days` is the parsed
@@ -49,11 +64,11 @@ function formatDayAttendance(days, date) {
   }
 
   const lines = row.periods.map((p, idx) => {
-    const emoji = STATUS_EMOJI[(p.statusColor || '').toLowerCase()] || '•';
+    const emoji = getStatusEmoji(p.statusColor, p.status);
     const subject = p.subjectCode
       ? `${p.subjectCode}${p.topic ? ` - ${p.topic}` : ''}`
       : `Period ${idx + 1}`;
-    return `${emoji} ${subject} — ${p.statusColor || p.status}`;
+    return `• ${subject} ${emoji}`;
   });
 
   return `📊 *Attendance for ${row.day}*\n\n${lines.join('\n')}`;

@@ -2,7 +2,7 @@ const { runPortalAutomation, getAttendanceForMonthCached, monthKey } = require('
 const store = require('../store');
 const { formatTimetable } = require('../formatters/timetable');
 const { formatAttendance, formatDayAttendance } = require('../formatters/attendance');
-const { parseDayAttendanceQuery } = require('./parseDayAttendanceQuery');
+const { parseDayAttendanceQuery, parseTimetableDateQuery } = require('./parseDayAttendanceQuery');
 const { helpText } = require('../formatters/help');
 
 // Ported from "Parse Command" + "Switch": one text handler that normalizes
@@ -24,7 +24,7 @@ function registerCommands(bot) {
         return;
       }
 
-      if (text.includes('timetable')) {
+      if (text.includes('timetable') || (!text.includes('attendance') && parseTimetableDateQuery(text))) {
         const snapshot = await store.getLatest();
         if (!snapshot) {
           await ctx.reply('⚠️ No data yet — send /start first.');

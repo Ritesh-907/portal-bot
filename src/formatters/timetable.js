@@ -1,4 +1,5 @@
 const { sameCalendarDate } = require('../utils/dateLabel');
+const { parseTimetableDateQuery } = require('../bot/parseDayAttendanceQuery');
 
 // Shared by both the weekday-based lookup below and the explicit-date one.
 function formatDayRow(row, label) {
@@ -21,7 +22,7 @@ function formatDayRow(row, label) {
 }
 
 // Ported from "Format Timetable". `text` is the already-lowercased,
-// already-trimmed message text (e.g. "timetable tomorrow", "next monday timetable").
+// already-trimmed message text (e.g. "timetable tomorrow", "next monday timetable", "1 oct timetable").
 function formatTimetable(snapshot, text) {
   const weekdayFull = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const weekdayShort = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -33,6 +34,8 @@ function formatTimetable(snapshot, text) {
   const isNext = /\bnext\b/.test(text);
   const isTomorrow = /\btomorrow\b/.test(text);
 
+  const dateQuery = parseTimetableDateQuery(text);
+
   let matchedIdx = -1;
   for (let i = 0; i < 7; i++) {
     if (text.includes(weekdayFull[i]) || new RegExp(`\\b${weekdayShort[i]}\\b`).test(text)) {
@@ -41,7 +44,13 @@ function formatTimetable(snapshot, text) {
     }
   }
 
-  if (isTomorrow) {
+  if (dateQuery) {
+    targetDate = new Date(dateQuery.year, dateQuery.monthIndex0, dateQuery.day);
+    const dayName = weekdayFull[targetDate.getDay()];
+    const capDayName = dayName[0].toUpperCase() + dayName.slice(1);
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    label = `${capDayName}, ${dateQuery.day} ${monthNames[dateQuery.monthIndex0]}`;
+  } else if (isTomorrow) {
     targetDate.setDate(now.getDate() + 1);
     label = "Tomorrow's";
   } else if (matchedIdx !== -1) {

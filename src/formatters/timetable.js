@@ -54,11 +54,19 @@ function formatTimetable(snapshot, text) {
     targetDate.setDate(now.getDate() + 1);
     label = "Tomorrow's";
   } else if (matchedIdx !== -1) {
-    let diff = (matchedIdx - now.getDay() + 7) % 7;
-    if (isNext) diff = diff === 0 ? 7 : diff + 7; // "next <day>" skips the immediate one
-    targetDate.setDate(now.getDate() + diff);
+    // Current week's Monday (Monday = 0 ... Sunday = 6)
+    const mondayOffset = (now.getDay() + 6) % 7;
+    const currentWeekMonday = new Date(now);
+    currentWeekMonday.setDate(now.getDate() - mondayOffset);
+
+    const dayOffsetInWeek = (matchedIdx + 6) % 7;
+    const addDays = isNext ? dayOffsetInWeek + 7 : dayOffsetInWeek;
+
+    targetDate = new Date(currentWeekMonday);
+    targetDate.setDate(currentWeekMonday.getDate() + addDays);
+
     const dayName = weekdayFull[matchedIdx][0].toUpperCase() + weekdayFull[matchedIdx].slice(1);
-    label = isNext ? `Next ${dayName}'s` : diff === 0 ? "Today's" : `${dayName}'s`;
+    label = isNext ? `Next ${dayName}'s` : `${dayName}'s`;
   }
 
   const row = (snapshot.weeklyTimetable || []).find((d) => sameCalendarDate(d.day, targetDate));

@@ -1,0 +1,19 @@
+{
+  "name": "portal-bot",
+  "version": "1.0.0",
+  "description": "Node.js replacement for the n8n 'Telegram Bot' + 'Portal Automation' workflows",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "axios-cookiejar-support": "^5.0.3",
+    "tough-cookie": "^4.1.4",
+    "dotenv": "^16.4.5",
+    "form-data": "^4.0.0",
+    "googleapis": "^140.0.1",
+    "telegraf": "^4.16.3"
+  }
+}

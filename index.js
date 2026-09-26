@@ -1,5 +1,12 @@
 require('dotenv').config();
+const http = require('http');
 const { createBot } = require('./src/bot');
+
+// Tiny HTTP server for Render health checks & keep-alive pinging
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => res.end('🤖 Portal bot is online')).listen(PORT, () => {
+  console.log(`🌐 HTTP server listening on port ${PORT}`);
+});
 
 const bot = createBot();
 
